@@ -17,12 +17,10 @@ namespace Wox.Plugin.Program
     {
         private static readonly object IndexLock = new object();
         private static Win32[] _win32s;
-        private static UWP.Application[] _uwps;
 
         private static PluginInitContext _context;
 
         private static BinaryStorage<Win32[]> _win32Storage;
-        private static BinaryStorage<UWP.Application[]> _uwpStorage;
         private static Settings _settings;
         private readonly PluginJsonStorage<Settings> _settingsStorage;
 
@@ -35,11 +33,8 @@ namespace Wox.Plugin.Program
             {
                 _win32Storage = new BinaryStorage<Win32[]>("Win32");
                 _win32s = _win32Storage.TryLoad(new Win32[] { });
-                _uwpStorage = new BinaryStorage<UWP.Application[]>("UWP");
-                _uwps = _uwpStorage.TryLoad(new UWP.Application[] { });
             });
             Log.Info($"|Wox.Plugin.Program.Main|Number of preload win32 programs <{_win32s.Length}>");
-            Log.Info($"|Wox.Plugin.Program.Main|Number of preload uwps <{_uwps.Length}>");
             Task.Run(() =>
             {
                 Stopwatch.Normal("|Wox.Plugin.Program.Main|Program index cost", IndexPrograms);
@@ -50,7 +45,6 @@ namespace Wox.Plugin.Program
         {
             _settingsStorage.Save();
             _win32Storage.Save(_win32s);
-            _uwpStorage.Save(_uwps);
         }
 
         public List<Result> Query(Query query)
@@ -58,9 +52,7 @@ namespace Wox.Plugin.Program
             lock (IndexLock)
             {
                 var results1 = _win32s.AsParallel().Select(p => p.Result(query.Search, _context.API));
-                var results2 = _uwps.AsParallel().Select(p => p.Result(query.Search, _context.API));
-                var result = results1.Concat(results2).Where(r => r.Score > 0).ToList();
-                return result;
+                return results1.ToList();
             }
         }
 
@@ -72,30 +64,15 @@ namespace Wox.Plugin.Program
         public static void IndexPrograms()
         {
             Win32[] w = { };
-            UWP.Application[] u = { };
             var t1 = Task.Run(() =>
             {
                 w = Win32.All(_settings);
             });
-            var t2 = Task.Run(() =>
-            {
-                var windows10 = new Version(10, 0);
-                var support = Environment.OSVersion.Version.Major >= windows10.Major;
-                if (support)
-                {
-                    u = UWP.All();
-                }
-                else
-                {
-                    u = new UWP.Application[] { };
-                }
-            });
-            Task.WaitAll(t1, t2);
+            Task.WaitAll(t1);
 
             lock (IndexLock)
             {
                 _win32s = w;
-                _uwps = u;
             }
         }
 
