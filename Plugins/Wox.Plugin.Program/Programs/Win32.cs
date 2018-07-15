@@ -49,13 +49,19 @@ namespace Wox.Plugin.Program.Programs
                 IcoPath = IcoPath,
                 Score = Score(query),
                 ContextData = this,
-                Action = e =>
+                Action = ctx =>
                 {
                     var info = new ProcessStartInfo
                     {
                         FileName = FullPath,
                         WorkingDirectory = ParentDirectory
                     };
+
+                    if (ctx.SpecialKeyState.CtrlPressed && ctx.SpecialKeyState.ShiftPressed)
+                    {
+                        info.Verb = "runas";
+                    }
+
                     var hide = Main.StartProcess(info);
                     return hide;
                 }
