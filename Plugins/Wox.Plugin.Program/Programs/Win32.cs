@@ -17,6 +17,8 @@ namespace Wox.Plugin.Program.Programs
     [Serializable]
     public class Win32 : IProgram
     {
+		private static FileChangeWatcher Watcher = new FileChangeWatcher();
+
         public string Name { get; set; }
         public string IcoPath { get; set; }
         public string FullPath { get; set; }
@@ -258,7 +260,7 @@ namespace Wox.Plugin.Program.Programs
             }
         }
 
-        private static ParallelQuery<Win32> UnregisteredPrograms(List<Settings.ProgramSource> sources, string[] suffixes)
+        private static ParallelQuery<Win32> UnregisteredPrograms(List<IProgramSource> sources, string[] suffixes)
         {
             var paths = sources.Where(s => Directory.Exists(s.Location))
                                .SelectMany(s => ProgramPaths(s.Location, suffixes))
@@ -392,10 +394,14 @@ namespace Wox.Plugin.Program.Programs
                 var startMenu = StartMenuPrograms(settings.ProgramSuffixes);
                 programs = programs.Concat(startMenu);
             }
+
             var unregistered = UnregisteredPrograms(settings.ProgramSources, settings.ProgramSuffixes);
             programs = programs.Concat(unregistered);
-            //.Select(ScoreFilter);
-            return programs.ToArray();
+
+			Watcher.RegisterSources(settings.ProgramSources, settings.ProgramSuffixes);
+
+			//.Select(ScoreFilter);
+			return programs.ToArray();
         }
     }
 }

@@ -5,7 +5,7 @@ namespace Wox.Plugin.Program
 {
     public class Settings
     {
-        public List<ProgramSource> ProgramSources { get; set; } = new List<ProgramSource>();
+        public List<IProgramSource> ProgramSources { get; set; } = new List<IProgramSource>();
         public string[] ProgramSuffixes { get; set; } = {"bat", "appref-ms", "exe", "lnk"};
 
         public bool EnableStartMenuSource { get; set; } = true;
@@ -14,7 +14,7 @@ namespace Wox.Plugin.Program
 
         internal const char SuffixSeperator = ';';
 
-        public class ProgramSource
+        public class ProgramSource : IProgramSource
         {
             public string Location { get; set; }
         }
