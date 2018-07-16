@@ -46,7 +46,7 @@ namespace Wox.Plugin.Program
                 {
                     Location = Directory.Text,
                 };
-                _settings.ProgramSources.Add(source);
+                _settings.Sources.Add(source);
             }
             else
             {

@@ -260,7 +260,7 @@ namespace Wox.Plugin.Program.Programs
             }
         }
 
-        private static ParallelQuery<Win32> UnregisteredPrograms(List<IProgramSource> sources, string[] suffixes)
+        private static ParallelQuery<Win32> UnregisteredPrograms(IEnumerable<IProgramSource> sources, string[] suffixes)
         {
             var paths = sources.Where(s => Directory.Exists(s.Location))
                                .SelectMany(s => ProgramPaths(s.Location, suffixes))

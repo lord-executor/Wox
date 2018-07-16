@@ -10,7 +10,7 @@ namespace Wox.Plugin.Program
 		private readonly IDictionary<string, IList<FileSystemWatcher>> WatchedPath = new Dictionary<string, IList<FileSystemWatcher>>();
 		private bool _indexing = false;
 
-		public void RegisterSources(List<IProgramSource> sources, string[] suffixes)
+		public void RegisterSources(IEnumerable<IProgramSource> sources, string[] suffixes)
 		{
 			foreach (var watchers in WatchedPath.Values)
 			{

@@ -27,7 +27,8 @@ namespace Wox.Infrastructure.Storage
             _serializerSettings = new JsonSerializerSettings
             {
                 ObjectCreationHandling = ObjectCreationHandling.Replace,
-                NullValueHandling = NullValueHandling.Ignore
+                NullValueHandling = NullValueHandling.Ignore,
+				Formatting = Formatting.Indented,
             };
         }
 
@@ -94,7 +95,7 @@ namespace Wox.Infrastructure.Storage
 
         public void Save()
         {
-            string serialized = JsonConvert.SerializeObject(_data, Formatting.Indented);
+            string serialized = JsonConvert.SerializeObject(_data, _serializerSettings);
             File.WriteAllText(FilePath, serialized);
         }
     }

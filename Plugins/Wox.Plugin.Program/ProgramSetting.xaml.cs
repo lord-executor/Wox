@@ -58,7 +58,7 @@ namespace Wox.Plugin.Program
 
                 if (MessageBox.Show(msg, string.Empty, MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                 {
-                    _settings.ProgramSources.Remove(selectedProgramSource);
+                    _settings.Sources.Remove(selectedProgramSource);
                     ReIndexing();
                 }
             }
@@ -120,7 +120,7 @@ namespace Wox.Plugin.Program
                 {
                     if (Directory.Exists(s))
                     {
-                        _settings.ProgramSources.Add(new Settings.ProgramSource
+                        _settings.Sources.Add(new Settings.ProgramSource
                         {
                             Location = s
                         });
